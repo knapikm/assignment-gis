@@ -15,13 +15,12 @@ Build a map-based application, which lets the user see geo-based data on a map a
 ## Data sources
 
 - [Open Street Maps](https://www.openstreetmap.org/)
+- [data.world](https://data.world/)
 
 ## My project
 
-Fill in (either in English, or in Slovak):
+**Application description**: Zobrazenie kriminality na mape podľa druhu trestného činu a zobrazenie policajných staníc, vizualizácia kriminality v podobe heatmapy a namapovanie kriminality s dátami o osobách s nízkym a stredným príjmom.
 
-**Application description**: `<fill in>`
+**Data source**: Open Street Map, data.world
 
-**Data source**: `<fill in>`
-
-**Technologies used**: `<fill in>`
+**Technologies used**: Postgis, CherryPy, Mapbox.js
