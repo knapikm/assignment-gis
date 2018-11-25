@@ -1,0 +1,8 @@
+.marker {
+    background-image: url(metro-marker.png);
+    background-size: cover;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+}

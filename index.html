@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <meta charset=utf-8 />
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+      html, body { height: 100%; background-color: #616161;}
+      #map { height: 90%;}
+    </style>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" type="text/css" href="./static/css/style.css">
+  </head>
+
+  <body>
+
+    <div class="w3-sidebar w3-bar-block w3-dark-grey w3-animate-right" style="display:none;width:200px;right:0;top:0" id="mySidebar">
+      <button class="w3-bar-item w3-button w3-large"
+      onclick="w3_close()">Close &times;</button>
+      <a href="#" class="w3-bar-item w3-button w3-border-bottom" id="l1" onclick="getAllMetro()">Metro lines and stations</a>
+      <button class="w3-button w3-block w3-left-align w3-border-bottom" onclick="myAccFunc()">Crimes <i class="fa fa-caret-down"></i></button>
+      <div id="demoAcc" class="w3-hide w3-white w3-card">
+        <select id="crimeTypeSelect" class="w3-bar-item w3-button w3-border-bottom">
+          <option value="1" selected="selected">All</option>
+          <option value="2">Theft/Othet</option>
+          <option value="3">Theft F/Auto</option>
+          <option value="4">Assault W/Dangerous Weapon</option>
+          <option value="5">Burglary</option>
+          <option value="6">Arson</option>
+          <option value="7">Homicide</option>
+          <option value="8">Robbery</option>
+          <option value="9">Sex Abuse</option>
+          <option value="10">Motor Vehicle Theft</option>
+        </select>
+        <a href="#" class="w3-bar-item w3-button w3-border-bottom" onclick="getAllCrimesCluesters()">Clusters</a>
+        <a href="#" class="w3-bar-item w3-button" onclick="getAllCrimesHeatMap()">Heatmap</a>
+      </div>
+      <a href="#" class="w3-bar-item w3-button w3-border-bottom" onclick="">Link 2</a>
+      <a href="#" class="w3-bar-item w3-button">Link 3</a>
+    </div>
+
+    <div class="w3-dark-grey " style="top:0">
+      <button class="w3-button w3-dark-grey w3-large w3-right" onclick="w3_open()">&#9776;</button>
+      <h2>Gis</h2>
+    </div>
+
+    <div id="map"></div>
+    <style>
+      
+    </style>
+  	<script src="./static/js/web.js"></script>
+    
+  </body>
+</html>
