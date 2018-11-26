@@ -20,8 +20,8 @@
       <button class="w3-bar-item w3-button w3-large"
       onclick="w3_close()">Close &times;</button>
       <a href="#" class="w3-bar-item w3-button w3-border-bottom" id="l1" onclick="getAllMetro()">Metro lines and stations</a>
-      <button class="w3-button w3-block w3-left-align w3-border-bottom" onclick="myAccFunc()">Crimes <i class="fa fa-caret-down"></i></button>
-      <div id="demoAcc" class="w3-hide w3-white w3-card">
+      <button class="w3-button w3-block w3-left-align w3-border-bottom" onclick="myAccFuncPoint()">Crimes <i class="fa fa-caret-down"></i></button>
+      <div id="CHAcc" class="w3-hide w3-white w3-card">
         <select id="crimeTypeSelect" class="w3-bar-item w3-button w3-border-bottom">
           <option value="1" selected="selected">All</option>
           <option value="2">Theft/Othet</option>
@@ -37,7 +37,22 @@
         <a href="#" class="w3-bar-item w3-button w3-border-bottom" onclick="getAllCrimesCluesters()">Clusters</a>
         <a href="#" class="w3-bar-item w3-button" onclick="getAllCrimesHeatMap()">Heatmap</a>
       </div>
-      <a href="#" class="w3-bar-item w3-button w3-border-bottom" onclick="">Link 2</a>
+      <button class="w3-button w3-block w3-left-align w3-border-bottom" onclick="myAccFuncPol()">Crimes in areas<i class="fa fa-caret-down"></i></button>
+      <div id="PAcc" class="w3-hide w3-white w3-card">
+        <select id="crimeTypeSelect" class="w3-bar-item w3-button w3-border-bottom">
+          <option value="1" selected="selected">All</option>
+          <option value="2">Theft/Othet</option>
+          <option value="3">Theft F/Auto</option>
+          <option value="4">Assault W/Dangerous Weapon</option>
+          <option value="5">Burglary</option>
+          <option value="6">Arson</option>
+          <option value="7">Homicide</option>
+          <option value="8">Robbery</option>
+          <option value="9">Sex Abuse</option>
+          <option value="10">Motor Vehicle Theft</option>
+        </select>
+        <a href="#" class="w3-bar-item w3-button" onclick="getAllCrimesInPolygons()">Polygons</a>
+      </div>
       <a href="#" class="w3-bar-item w3-button">Link 3</a>
     </div>
 

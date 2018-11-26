@@ -143,26 +143,6 @@ def crimes(crime_type):
     conn.close()
 
     finalJson = []
-    icon_type = {
-        'THEFT/OTHER': 'marker-stroked', 
-        'THEFT F/AUTO': 'car',
-        'ASSAULT W/DANGEROUS WEAPON': 'baseball',
-        'BURGLARY': 'logging',
-        'ARSON': 'fire-station',
-        'HOMICIDE': 'danger',
-        'ROBBERY': 'town-hall',
-        'SEX ABUSE': 'cross',
-        'MOTOR VEHICLE THEFT': 'car'}
-    color_type = {
-        'THEFT/OTHER': '#ffff00',
-        'THEFT F/AUTO': '#3bb2d0',
-        'ASSAULT W/DANGEROUS WEAPON': '#ff0000',
-        'BURGLARY': 'ffff00',
-        'ARSON': '#ff8c00',
-        'HOMICIDE': '#000000',
-        'ROBBERY': '#ffff00',
-        'SEX ABUSE': '#ff0000',
-        'MOTOR VEHICLE THEFT': '#ffff00'}
     for row in rows:
         finalJson.append(json.dumps(
         {
@@ -174,14 +154,72 @@ def crimes(crime_type):
             'properties': {
                 'title': row[3],
                 'description': row[3] + ', ' + str(row[2]) + ', method: ' + row[4],
-                #'marker-color': color_type[row[3]],
-                #'marker-size': 'small',
-                #'marker-symbol': icon_type[row[3]],
             }
         }))
         finalJson.append(';')
     return finalJson
 
+
+def get_poly_coord(data):
+    data = data.replace("(","").replace(")","")[7:].split(",")
+    return [p.split() for p in data]
+
+def crimes_in_polygons(crime_type):
+    try:
+        conn = psycopg2.connect("dbname='pdt' \
+               user='postgres' host='localhost' password=''")
+    except:
+        print("I am unable to connect to the database")
+
+    #  cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur = conn.cursor()  # set cursor
+    try:
+        if crime_type == '1':
+            cur.execute("""SELECT ST_AsText(res.way), count(res.*) FROM (
+                                SELECT pol.osm_id, pol.way, ci.y, ci.x, ci.reportdatetime, ci.offense, ci.method, ST_Contains(pol.way, ci.way) as is_in
+                                FROM planet_osm_polygon as pol, crime_incidents as ci
+                                WHERE pol.boundary = 'neighborhood' OR pol.boundary = 'protected_area' OR pol.boundary = 'suburb' OR pol.boundary = 'borough'
+                            ) AS res WHERE is_in = true GROUP BY res.osm_id, res.way;""")
+        else:
+            offense_type = {
+                '2': 'THEFT/OTHER',
+                '3': 'THEFT F/AUTO',
+                '4': 'ASSAULT W/DANGEROUS WEAPON',
+                '5': 'BURGLARY',
+                '6': 'ARSON',
+                '7': 'HOMICIDE',
+                '8': 'ROBBERY',
+                '9': 'SEX ABUSE',
+                '10': 'MOTOR VEHICLE THEFT',
+            }
+            cur.execute("""SELECT ST_AsText(res.way), count(res.*) FROM (
+                                SELECT pol.osm_id, pol.way, ci.y, ci.x, ci.reportdatetime, ci.offense, ci.method, ST_Contains(pol.way, ci.way) as is_in
+                                FROM planet_osm_polygon as pol, crime_incidents as ci
+                                WHERE ci.offense LIKE %s AND (pol.boundary = 'neighborhood' OR pol.boundary = 'protected_area' OR pol.boundary = 'suburb' OR pol.boundary = 'borough')
+                           ) AS res WHERE is_in = true GROUP BY res.osm_id, res.way;""", (offense_type[crime_type],))
+    except:
+        print("I can't SELECT from planet_osm_polygon, crime_incidents")
+
+    rows = cur.fetchall()
+    conn.close()
+
+    finalJson = []
+    for row in rows:
+        points = get_poly_coord(row[0])
+        finalJson.append(json.dumps(
+        {
+            'type': 'Feature',
+            'geometry': {
+                'type': 'Polygon',
+                'coordinates': [points]
+            },
+            'properties': {
+                'count': row[1],
+            }
+        }))
+        finalJson.append(';')
+
+    return finalJson
 
 class Gis(object):
     @cherrypy.expose
@@ -196,6 +234,7 @@ class MetroLinesWebService(object):
     def GET(self):
         return metro_lines()
 
+
 @cherrypy.expose
 class MetroStationsWebService(object):
 
@@ -203,12 +242,21 @@ class MetroStationsWebService(object):
     def GET(self):
         return metro_stations()
 
+
 @cherrypy.expose
 class CrimesWebService(object):
 
     @cherrypy.tools.accept(media='text/plain')
     def POST(self, crime_type=None):
         return crimes(crime_type)
+
+@cherrypy.expose
+class PolygonCrimesWebService(object):
+
+    @cherrypy.tools.accept(media='text/plain')
+    def POST(self, crime_type=None):
+        return crimes_in_polygons(crime_type)
+        
 
 if __name__ == '__main__':
     conf = {
@@ -231,6 +279,11 @@ if __name__ == '__main__':
             'tools.response_headers.on': True,
             'tools.response_headers.headers': [('Content-Type', 'text/plain')],
         },
+        '/crimes_polygon': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
+            'tools.response_headers.on': True,
+            'tools.response_headers.headers': [('Content-Type', 'text/plain')],
+        },
         '/static': {
             'tools.staticdir.on': True,
             'tools.staticdir.dir': './public'
@@ -241,4 +294,5 @@ webapp = Gis()
 webapp.metro_stations = MetroStationsWebService()
 webapp.metro_lines = MetroLinesWebService()
 webapp.crimes = CrimesWebService()
+webapp.crimes_polygon = PolygonCrimesWebService()
 cherrypy.quickstart(webapp, '/', conf)

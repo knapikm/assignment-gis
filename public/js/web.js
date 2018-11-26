@@ -398,9 +398,67 @@ function getAllCrimesCluesters() {
 
 }
 
-function myAccFunc() {
-    console.log('myAccFunc')
-    var x = document.getElementById("demoAcc");
+function getAllCrimesInPolygons() {
+    var e = document.getElementById("crimeTypeSelect");
+    var strUser = e.options[e.selectedIndex].value;
+
+    $.ajax({
+      type: "POST",
+      url: "/crimes_polygon",
+      data: {"crime_type": strUser},
+      dataType: 'text',
+      success: function(result) {
+            dataCrimes = result.split(';');
+            for (i = 0; i < dataCrimes.length-1; i++)
+                dataCrimes[i] = JSON.parse(dataCrimes[i])
+            console.log(dataCrimes.length)
+            map.addLayer({
+              'id': 'maine',
+              'type': 'fill',
+              'source': {
+                  type: 'geojson',
+                  data: {
+                      "type": "FeatureCollection",
+                      "features": dataCrimes
+                  },
+              },
+                  'layout': {},
+                  'paint': {
+                      'fill-opacity': 0.8,
+                      'fill-color': [
+                          'step',
+                          ['get', 'count'],
+                          '#fbb03b',
+                          10,
+                          '#223b53',
+                          50, 
+                          '#e55e5e',
+                          150,
+                          '#3bb2d0',
+                          300,
+                          /* other */ '#ccc'
+                      ]
+                  }
+          });
+      },
+    });
+
+}
+
+function myAccFuncPoint() {
+    var x = document.getElementById("CHAcc");
+    if (x.className.indexOf("w3-show") == -1) {
+        x.className += " w3-show";
+        x.previousElementSibling.className += " w3-green";
+    } else { 
+        x.className = x.className.replace(" w3-show", "");
+        x.previousElementSibling.className = 
+        x.previousElementSibling.className.replace(" w3-green", "");
+    }
+}
+
+function myAccFuncPol() {
+    var x = document.getElementById("PAcc");
     if (x.className.indexOf("w3-show") == -1) {
         x.className += " w3-show";
         x.previousElementSibling.className += " w3-green";
