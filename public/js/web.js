@@ -376,6 +376,13 @@ function getAllCrimesCluesters() {
                 map.getCanvas().style.cursor = '';
             });
 
+            map.on('click', 'unclustered-point', function(e) {
+              new mapboxgl.Popup()
+                .setLngLat(e.features[0].geometry.coordinates)
+                .setHTML('<b>description:</b> ' + e.features[0].properties.description)
+                .addTo(map);
+            });
+            /*
             map.on('click', 'unclustered-point', function (e) {
                 var coordinates = e.features[0].geometry.coordinates.slice();
                 var description = e.features[0].properties.description;
@@ -391,7 +398,7 @@ function getAllCrimesCluesters() {
                     .setLngLat(coordinates)
                     .setHTML('<b>description:</b> ' + description)
                     .addTo(map);
-            });
+            });*/
 
       },
     });
@@ -399,7 +406,7 @@ function getAllCrimesCluesters() {
 }
 
 function getAllCrimesInPolygons() {
-    var e = document.getElementById("crimeTypeSelect");
+    var e = document.getElementById("crimeTypePolygonSelect");
     var strUser = e.options[e.selectedIndex].value;
 
     $.ajax({
@@ -411,7 +418,7 @@ function getAllCrimesInPolygons() {
             dataCrimes = result.split(';');
             for (i = 0; i < dataCrimes.length-1; i++)
                 dataCrimes[i] = JSON.parse(dataCrimes[i])
-            console.log(dataCrimes.length)
+
             map.addLayer({
               'id': 'maine',
               'type': 'fill',
@@ -424,22 +431,50 @@ function getAllCrimesInPolygons() {
               },
                   'layout': {},
                   'paint': {
-                      'fill-opacity': 0.8,
+                      'fill-opacity': 0.7,
                       'fill-color': [
                           'step',
-                          ['get', 'count'],
-                          '#fbb03b',
+                          ['get', 'ratio'],
+                          '#FFEDA0',
                           10,
-                          '#223b53',
-                          50, 
-                          '#e55e5e',
-                          150,
-                          '#3bb2d0',
-                          300,
-                          /* other */ '#ccc'
+                          '#FED976',
+                          30,
+                          '#FEB24C',
+                          70,
+                          '#FD8D3C',
+                          140,
+                          '#FC4E2A',
+                          210,
+                          '#E31A1C',
+                          500,
+                          '#BD0026',
+                          700,
+                          '#800026'
                       ]
                   }
-          });
+            });
+
+            map.on('click', 'maine', function(e) {
+
+              function findCenter (arr)
+              {
+                  var minX, maxX, minY, maxY;
+                  for (var i = 0; i < arr.length; i++)
+                  {
+                      minX = (arr[i][0] < minX || minX == null) ? arr[i][0] : minX;
+                      maxX = (arr[i][0] > maxX || maxX == null) ? arr[i][0] : maxX;
+                      minY = (arr[i][1] < minY || minY == null) ? arr[i][1] : minY;
+                      maxY = (arr[i][1] > maxY || maxY == null) ? arr[i][1] : maxY;
+                  }
+                  return [(minX + maxX) / 2, (minY + maxY) / 2];
+              }
+              center = findCenter(e.features[0].geometry.coordinates[0])
+
+              new mapboxgl.Popup()
+                .setLngLat(center)
+                .setHTML('<b>count:</b> ' + e.features[0].properties.count)
+                .addTo(map);
+            });
       },
     });
 

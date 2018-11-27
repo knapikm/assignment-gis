@@ -175,7 +175,7 @@ def crimes_in_polygons(crime_type):
     cur = conn.cursor()  # set cursor
     try:
         if crime_type == '1':
-            cur.execute("""SELECT ST_AsText(res.way), count(res.*) FROM (
+            cur.execute("""SELECT ST_AsText(res.way), count(res.*), ST_Area(geography(res.way)), count(res.*) / ST_Area(geography(res.way)) * 1000000 as crime_per_size FROM (
                                 SELECT pol.osm_id, pol.way, ci.y, ci.x, ci.reportdatetime, ci.offense, ci.method, ST_Contains(pol.way, ci.way) as is_in
                                 FROM planet_osm_polygon as pol, crime_incidents as ci
                                 WHERE pol.boundary = 'neighborhood' OR pol.boundary = 'protected_area' OR pol.boundary = 'suburb' OR pol.boundary = 'borough'
@@ -192,7 +192,8 @@ def crimes_in_polygons(crime_type):
                 '9': 'SEX ABUSE',
                 '10': 'MOTOR VEHICLE THEFT',
             }
-            cur.execute("""SELECT ST_AsText(res.way), count(res.*) FROM (
+            print(offense_type[crime_type])
+            cur.execute("""SELECT ST_AsText(res.way), count(res.*), ST_Area(geography(res.way)), count(res.*) / ST_Area(geography(res.way)) * 1000000 as crime_per_size FROM (
                                 SELECT pol.osm_id, pol.way, ci.y, ci.x, ci.reportdatetime, ci.offense, ci.method, ST_Contains(pol.way, ci.way) as is_in
                                 FROM planet_osm_polygon as pol, crime_incidents as ci
                                 WHERE ci.offense LIKE %s AND (pol.boundary = 'neighborhood' OR pol.boundary = 'protected_area' OR pol.boundary = 'suburb' OR pol.boundary = 'borough')
@@ -215,10 +216,11 @@ def crimes_in_polygons(crime_type):
             },
             'properties': {
                 'count': row[1],
+                'size': row[2],
+                'ratio': row[3],
             }
         }))
         finalJson.append(';')
-
     return finalJson
 
 class Gis(object):
