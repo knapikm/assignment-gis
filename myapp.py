@@ -2,7 +2,6 @@
 
 import os
 import os.path
-import random
 import string
 import cherrypy
 import psycopg2
@@ -42,16 +41,6 @@ def metro_stations():
                 'coordinates': [row[2], row[1]]
             }
         }))
-        '''
-        finalJson.append(json.dumps(
-        {
-            'type': 'Feature',
-            'geometry': {
-                'type': 'Point',
-                'coordinates': [row[0], row[1]]
-            }
-        }))
-        '''
         finalJson.append(';')
     return finalJson
 
@@ -111,6 +100,7 @@ def metro_lines():
         finalJson.append(';')
     return finalJson
 
+
 def crimes(crime_type):
     try:
         conn = psycopg2.connect("dbname='pdt' \
@@ -122,7 +112,7 @@ def crimes(crime_type):
     cur = conn.cursor()  # set cursor
     try:
         if crime_type == '1':
-            cur.execute("""SELECT y, x, reportdatetime, offense, method FROM crime_incidents;""")
+            cur.execute("""SELECT y, x, reportdatetime, offense, method, to_char(start_date, 'MM') FROM crime_incidents;""")
         else:
             offense_type = {
                 '2': 'THEFT/OTHER',
@@ -135,13 +125,24 @@ def crimes(crime_type):
                 '9': 'SEX ABUSE',
                 '10': 'MOTOR VEHICLE THEFT',
             }
-            cur.execute("""SELECT y, x, reportdatetime, offense, method FROM crime_incidents WHERE offense Like %s;""", (offense_type[crime_type],))
+            cur.execute("""SELECT y, x, reportdatetime, offense, method, to_char(start_date, 'MM') FROM crime_incidents WHERE offense Like %s;""", (offense_type[crime_type],))
     except:
         print("I can't SELECT from crime_incidents")
 
     rows = cur.fetchall()
     conn.close()
 
+    crime_type = {
+                    'THEFT/OTHER': '2',
+                    'THEFT F/AUTO': '3',
+                    'ASSAULT W/DANGEROUS WEAPON': '4',
+                    'BURGLARY': '5',
+                    'ARSON': '6',
+                    'HOMICIDE': '7',
+                    'ROBBERY': '8',
+                    'SEX ABUSE': '9',
+                    'MOTOR VEHICLE THEFT': '10',
+                }
     finalJson = []
     for row in rows:
         finalJson.append(json.dumps(
@@ -154,6 +155,8 @@ def crimes(crime_type):
             'properties': {
                 'title': row[3],
                 'description': row[3] + ', ' + str(row[2]) + ', method: ' + row[4],
+                'crime-type': crime_type[row[3]],
+                'month': row[5]
             }
         }))
         finalJson.append(';')
@@ -163,6 +166,7 @@ def crimes(crime_type):
 def get_poly_coord(data):
     data = data.replace("(","").replace(")","")[7:].split(",")
     return [p.split() for p in data]
+
 
 def crimes_in_polygons(crime_type):
     try:
@@ -223,6 +227,7 @@ def crimes_in_polygons(crime_type):
         finalJson.append(';')
     return finalJson
 
+
 class Gis(object):
     @cherrypy.expose
     def index(self):
@@ -251,6 +256,7 @@ class CrimesWebService(object):
     @cherrypy.tools.accept(media='text/plain')
     def POST(self, crime_type=None):
         return crimes(crime_type)
+
 
 @cherrypy.expose
 class PolygonCrimesWebService(object):
