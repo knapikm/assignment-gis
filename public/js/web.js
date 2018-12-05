@@ -39,6 +39,12 @@ function w3_close() {
     if (map.getSource('crimes')) {
         map.removeSource('crimes');
     }
+    if (map.getLayer('polygons')) {
+        map.removeLayer('polygons');
+    }
+    if (map.getSource('polygon-crimes')) {
+        map.removeSource('polygon-crimes');
+    }
 
     document.getElementById("mySidebar").style.display = "none";
 }
@@ -287,7 +293,18 @@ function getAllCrimesHeatMap() {
     });
 }
 
+document.getElementById('crimeTypePolygonSelect').addEventListener('change', function(e) {
+    getAllCrimesInPolygons();
+});
+
 function getAllCrimesInPolygons() {
+    if (map.getLayer('polygons')) {
+        map.removeLayer('polygons');
+    }
+    if (map.getSource('polygon-crimes')) {
+        map.removeSource('polygon-crimes');
+    }
+
     var e = document.getElementById("crimeTypePolygonSelect");
     var strUser = e.options[e.selectedIndex].value;
 
@@ -301,16 +318,18 @@ function getAllCrimesInPolygons() {
             for (i = 0; i < dataPolygonCrimes.length-1; i++)
                 dataPolygonCrimes[i] = JSON.parse(dataPolygonCrimes[i])
 
+            map.addSource('polygon-crimes', {
+                type: 'geojson',
+                data: {
+                    "type": "FeatureCollection",
+                    "features": dataPolygonCrimes
+                }
+            });
+
             map.addLayer({
               'id': 'polygons',
               'type': 'fill',
-              'source': {
-                  type: 'geojson',
-                  data: {
-                      "type": "FeatureCollection",
-                      "features": dataPolygonCrimes
-                  },
-              },
+              'source': 'polygon-crimes',
               'layout': {},
               'paint': {
                   'fill-opacity': 0.7,
