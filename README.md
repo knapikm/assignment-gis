@@ -16,10 +16,11 @@ Build a map-based application, which lets the user see geo-based data on a map a
 
 - [Open Street Maps](https://www.openstreetmap.org/)
 - [data.world](https://data.world/)
+- [Washington Metropolitan Area Transit Authority](https://developer.wmata.com)
 
 ## My project
 
-**Application description**: Zobrazenie liniek metra a zastávok metra vo vzdialenosti jedného kilometra. Zobrazenie kriminality na mape podľa druhu trestného činu a vizualizácia kriminality v podobe heatmapy a heatmapy podľa času. Namapovanie početnosti kriminality na jednotlivé oblasti, resp. na veľkosť oblasti.
+**Application description**: Zobrazenie liniek metra a zastávok metra vo vzdialenosti jedného kilometra. Zobrazenie kriminality v podobe heatmapy a heatmapy podľa času, filtrovanie výsledku podľa druhu trestného činu. Namapovanie početnosti kriminality na jednotlivé oblasti, resp. na veľkosť oblasti a filtrovanie výsledku podľa druhu trestného činu.
 
 **Data source**: Open Street Map, data.world, Washington Metropolitan Area Transit Authority
 
