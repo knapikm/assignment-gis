@@ -19,8 +19,8 @@ Build a map-based application, which lets the user see geo-based data on a map a
 
 ## My project
 
-**Application description**: Zobrazenie kriminality na mape podľa druhu trestného činu a zobrazenie policajných staníc, vizualizácia kriminality v podobe heatmapy a namapovanie kriminality s dátami o osobách s nízkym a stredným príjmom.
+**Application description**: Zobrazenie liniek metra a zastávok metra vo vzdialenosti jedného kilometra. Zobrazenie kriminality na mape podľa druhu trestného činu a vizualizácia kriminality v podobe heatmapy a heatmapy podľa času. Namapovanie početnosti kriminality na jednotlivé oblasti, resp. na veľkosť oblasti.
 
-**Data source**: Open Street Map, data.world
+**Data source**: Open Street Map, data.world, Washington Metropolitan Area Transit Authority
 
-**Technologies used**: Postgis, CherryPy, Mapbox.js
+**Technologies used**: Postgis, CherryPy, Mapbox GL JS

@@ -20,6 +20,10 @@ function w3_open() {
 }
 
 function w3_close() {
+    document.getElementById("mySidebar").style.display = "none";
+}
+
+function clearMap() {
     markers.forEach(function(m) {
         m.remove()
     })
@@ -45,8 +49,6 @@ function w3_close() {
     if (map.getSource('polygon-crimes')) {
         map.removeSource('polygon-crimes');
     }
-
-    document.getElementById("mySidebar").style.display = "none";
 }
 
 function sleep(ms) {
@@ -61,13 +63,16 @@ async function monthsPlayer() {
     }
     e = document.getElementById("crimeMonthSelect");
     for (i = 1; i <= 12; i++) {
-      await sleep(1100);
+      await sleep(1200);
+      e.value= e.options[i].value;
       var month = e.options[i].value;
+
       var filterMonth = ['==', ['string', ['get', 'month']], month];
       map.setFilter('crime-heat', filterMonth);
       map.setFilter('crime-point', filterMonth);
     }
-    await sleep(1100);
+    await sleep(1200);
+    e.value= e.options[0].value;
     map.setFilter('crime-heat', null);
     map.setFilter('crime-point', null);
 }
@@ -107,6 +112,16 @@ document.getElementById('crimeMonthSelect').addEventListener('change', function(
 });
 
 function getAllMetro() {
+    markers.forEach(function(m) {
+        m.remove()
+    })
+    markers = [];
+    if (map.getLayer('metro-lines')) {
+        map.removeLayer('metro-lines');
+    }
+    if (map.getSource('lines')) {
+        map.removeSource('lines');
+    }
     getMetroLines();
     getAllMetroStations();
 }
@@ -169,6 +184,8 @@ function getAllMetroStations() {
               // make a marker for each feature and add to the map
               var m = new mapboxgl.Marker(el)
               .setLngLat(marker.geometry.coordinates)
+              .setPopup(new mapboxgl.Popup({ offset: 25 }) // add popups
+              .setHTML('<b>' + marker.properties.title + '</b>'))
               .addTo(map);
               markers.push(m)
             });

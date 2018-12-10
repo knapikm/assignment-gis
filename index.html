@@ -35,7 +35,7 @@
           <option value="10">Motor Vehicle Theft</option>
         </select>
         <a href="#" class="w3-bar-item w3-button" onclick="getAllCrimesHeatMap()">Heatmap</a>
-        <button class="w3-button w3-block w3-left-align w3-border-bottom" onclick="myAccFuncOverTime()">Crimes over months<i class="fa fa-caret-down"></i></button>
+        <button class="w3-button w3-block w3-left-align w3-border-bottom" onclick="myAccFuncOverTime()">Heatmap over months<i class="fa fa-caret-down"></i></button>
         <div id="POTAcc" class="w3-hide w3-white w3-card">
           <select id="crimeMonthSelect" class="w3-bar-item w3-button w3-border-bottom">
             <option value="0" selected="selected">All months</option>
@@ -71,6 +71,7 @@
         </select>
         <a href="#" class="w3-bar-item w3-button" onclick="getAllCrimesInPolygons()">Polygons</a>
       </div>
+      <button class="w3-button w3-block w3-left-align w3-border-bottom" onclick="clearMap()">Clear map<i class="fa fa-caret-down"></i></button>
     </div>
 
     <div class="w3-dark-grey " style="top:0">
@@ -79,9 +80,6 @@
     </div>
 
     <div id="map"></div>
-    <style>
-      
-    </style>
   	<script src="./static/js/web.js"></script>
     
   </body>
