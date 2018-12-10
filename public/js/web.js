@@ -56,8 +56,18 @@ function sleep(ms) {
 }
 
 async function monthsPlayer() {
-    map.setFilter('crime-heat', null);
-    map.setFilter('crime-point', null);
+    var e = document.getElementById("crimeTypeSelect");
+    var cType = e.options[e.selectedIndex].value;
+    var filterType = ['==', ['string', ['get', 'crime-type']], cType];
+
+    if (cType == 1) {
+      map.setFilter('crime-heat', null);
+      map.setFilter('crime-point', null);
+    }
+    else {
+      map.setFilter('crime-heat', filterType);
+      map.setFilter('crime-point', filterType);
+    }
     const sleep = (milliseconds) => {
       return new Promise(resolve => setTimeout(resolve, milliseconds))
     }
@@ -68,13 +78,25 @@ async function monthsPlayer() {
       var month = e.options[i].value;
 
       var filterMonth = ['==', ['string', ['get', 'month']], month];
-      map.setFilter('crime-heat', filterMonth);
-      map.setFilter('crime-point', filterMonth);
+      if (cType == 1) {
+        map.setFilter('crime-heat', filterMonth);
+        map.setFilter('crime-point', filterMonth);
+      }
+      else {
+        map.setFilter('crime-heat', ['all', filterType, filterMonth]);
+        map.setFilter('crime-point', ['all', filterType, filterMonth]);
+      }
     }
     await sleep(1200);
     e.value= e.options[0].value;
-    map.setFilter('crime-heat', null);
-    map.setFilter('crime-point', null);
+    if (cType == 1) {
+      map.setFilter('crime-heat', null);
+      map.setFilter('crime-point', null);
+    }
+    else {
+      map.setFilter('crime-heat', filterType);
+      map.setFilter('crime-point', filterType);
+    }
 }
 
 function mapFilters() {
@@ -112,16 +134,8 @@ document.getElementById('crimeMonthSelect').addEventListener('change', function(
 });
 
 function getAllMetro() {
-    markers.forEach(function(m) {
-        m.remove()
-    })
-    markers = [];
-    if (map.getLayer('metro-lines')) {
-        map.removeLayer('metro-lines');
-    }
-    if (map.getSource('lines')) {
-        map.removeSource('lines');
-    }
+    if (map.getLayer('metro-lines'))
+        return;
     getMetroLines();
     getAllMetroStations();
 }
